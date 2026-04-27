@@ -17,17 +17,11 @@ class Graph:
     
     def BFS(self,s):
         visited = defaultdict(list)
-        distance = defaultdict(list)
-        father = defaultdict(list)
         
         for u in self.graph:
             visited[u] = False
-            distance[u] =  float('inf')
-            father[u] = None
     
         visited[s] = True
-        distance[s] = True
-        father[s] = None
         
         queue = deque()
         queue.append(s)
@@ -38,31 +32,36 @@ class Graph:
             for v in neighbors:
                 if not visited[v]:
                     visited[v] = True
-                    distance[v] = distance[v] + 1
-                    father[v] = u
                     queue.append(v)
         
         found_nodes = [key for key, value in visited.items() if value is True]
         return found_nodes
     
 
-input_lines = [linha.strip() for linha in sys.stdin]
+tokens = sys.stdin.read().split()
+tokens = [token for token in tokens if token.isdigit()]
+
 test_case_list = []
 
+test_count = int(tokens[0])
 index = 1
-while(index < len(input_lines)):
-    node_count = int(input_lines[index])
-    edge_count = int(input_lines[index+1])
+
+for _ in range(test_count):
+    node_count = int(tokens[index])
+    index += 1
+
+    edge_count = int(tokens[index])
+    index += 1
+
     graph_input = Graph_input(node_count, edge_count, [])
-    index = index + 2
-    candidate = input_lines[index]
-    while len(candidate) > 1:
-        graph_input.edge_list.append(candidate)
-        index +=1
-        try:
-            candidate = input_lines[index]
-        except:
-            break
+
+    for _ in range(edge_count):
+        u = tokens[index]
+        v = tokens[index + 1]
+        index += 2
+
+        graph_input.edge_list.append(f"{u} {v}")
+
     test_case_list.append(graph_input)
     
 case = 1
