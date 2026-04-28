@@ -1,0 +1,38 @@
+class Graph:
+    def __init__(self):
+        self.graph = defaultdict(list)
+
+    def add_edge(self, u, v, weight):
+        self.graph[u].append([v, weight])
+        self.graph[v].append([u, weight])
+    
+    def find_min_path(self,s):
+        distance = defaultdict(list)
+        father = defaultdict(list)
+        visited = defaultdict(list)
+        
+        for node in self.graph:
+            distance[node] = float('inf')
+            father[node] = None
+            visited[node] = None
+        
+        distance[s] = 0
+        queue = []
+        heapq.heappush(queue, (0, s))
+        
+        while queue:
+            d,u = heapq.heappop(queue)
+            
+            if visited[u] ==  True:
+                continue
+                
+            visited[u] = True
+            
+            neighbors = self.graph[u]
+            for v, w in neighbors:
+                if distance[v] > distance[u] + w:
+                    distance[v] = distance[u] + w
+                    father[v] = u
+                    heapq.heappush(queue, (distance[v], v))
+
+        return distance
