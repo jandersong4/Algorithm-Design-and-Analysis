@@ -4,30 +4,23 @@ from collections import defaultdict, deque
 sys.setrecursionlimit(10**6)
 
 class Graph:
-    def __init__(self):
-        # self.n = n
+    def __init__(self,n):
+        self.n = n
         self.graph = defaultdict(list)
 
     def add_edge(self, u, v):
         self.graph[u].append(v)
     
     def Kosaraju(self):
-        visited = defaultdict(list)
-        # visited = [False] * (self.n+1)
-        for u in self.graph:
-            visited[u] = False
-        
+        visited = [False] * (self.n + 1)
         dfs_stack_order = []
         
-        for u in self.graph:
+        for u in range(1, self.n + 1):
             if visited[u] == False:
                 self.dfs_order(u, visited, dfs_stack_order)
                 
         transposed_graph = self.transpose_graph()
-        
-        for u in self.graph:
-            visited[u] = False
-        
+        visited = [False] * (self.n + 1)
         components_list = []
         
         while dfs_stack_order:
@@ -51,8 +44,8 @@ class Graph:
         dfs_stack_order.append(u)
         
     def transpose_graph(self):
-        transpose_graph = Graph()
-        for u in self.graph:
+        transpose_graph = Graph(self.n)
+        for u in range(1, self.n + 1):
             neighbors = self.graph[u]
             for v in neighbors:
                 transpose_graph.add_edge(v,u)
@@ -70,7 +63,7 @@ class Graph:
 data = list(map(int, sys.stdin.buffer.read().split()))
 
 cities_count = data[0]
-graph = Graph()
+graph = Graph(cities_count)
 
 index = 1
 while index < len(data):
