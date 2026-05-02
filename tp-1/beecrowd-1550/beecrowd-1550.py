@@ -1,59 +1,68 @@
 import sys
+from collections import deque
 
-class Number_digits:
-    def __init__(self,digit_a, digit_b):
-        self.digit_a = digit_a
-        self.digit_b = digit_b
-        self.sum_counter = 0
-        self.inverse_counter = 0
-    
-    def find_new_digit(self):        
-        sum_a = sum(self.digit_a)
-        sum_b = sum(self.digit_b)
+MAX_VALUE = 10000
+
+reverse_numbers = [0] * MAX_VALUE
+
+for i in range(MAX_VALUE):
+    reverse_numbers[i] = int(str(i)[::-1])
+
+class Graph:
+    def __init__(self):
+        pass
         
-        units = sum_b - sum_a
-        max_element = max(self.digit_b[0], self.digit_b[-1])
-        min_element = min(self.digit_b[0], self.digit_b[-1])
-        
-        while (self.digit_a[-1] < max_element) and units: 
-            self.digit_a[-1]+=1
-            self.sum_counter +=1
-            units-=1
-        if(self.digit_a[0] < min_element):
-            self.inverse_counter+=1
-            while units:
-                self.digit_a[0]+=1
-                self.sum_counter+=1
-                units-=1
-            self.digit_a.reverse()
-        if(self.digit_a == self.digit_b):
-            return self.sum_counter + self.inverse_counter
-        else:
-            self.inverse_counter+=1
-        return self.sum_counter + self.inverse_counter
+    def invert_number(self, number):
+        return reverse_numbers[number]
 
-# nome_arquivo = sys.argv[1]
-
-# with open(nome_arquivo, "r") as arquivo:
-#     data = list(map(int, arquivo.read().split()))
-
-data = sys.stdin.buffer.read().split()
+    def add_inverse_edge(self, u):
+        return self.invert_number(u)
     
-tests_len = int(data[0])
+    def add_plus_one_edge(self, u):
+        return u + 1
+    
+    def BFS(self, s, t):
+        visited = [False] * MAX_VALUE
+        distance = [0] * MAX_VALUE
+        
+        visited[s] = True
+        
+        queue = deque()
+        queue.append(s)
+        
+        while queue:
+            u = queue.popleft()
+            
+            if u == t:
+                return distance[u]
+            
+            neighbors = [
+                self.add_plus_one_edge(u),
+                self.add_inverse_edge(u)
+            ]
+            
+            for v in neighbors:
+                if v < MAX_VALUE and not visited[v]:
+                    visited[v] = True
+                    distance[v] = distance[u] + 1
+                    queue.append(v)
+        
+        return distance[t]
 
-test_index = 0  
+
+data = list(map(int, sys.stdin.buffer.read().split()))
+    
+tests_len = data[0]
+
 index = 1
+answers = []
 
-while test_index < tests_len:
-    a = [int(digit) for digit in data[index].decode()]
-    b = [int(digit) for digit in data[index + 1].decode()]
-    number_digits = Number_digits(a,b)
-    number_digits.digit_a = a
-    number_digits.digit_b = b
-    index+=2
-    
-    test_index += 1
-    counter = number_digits.find_new_digit()
+for _ in range(tests_len):
+    graph = Graph()
+
+    a = data[index]
+    b = data[index + 1]
+    index += 2
+
+    counter = graph.BFS(a, b)
     print(counter)
-
-
